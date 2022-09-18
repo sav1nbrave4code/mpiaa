@@ -23,6 +23,8 @@
 
 ### Замеры времени
 
+Замеры были на release версии с флагом оптимизации -O2
+
 Для N = 1000
 
 | Function / Type of values   | Same       | Random     | Unique     |
