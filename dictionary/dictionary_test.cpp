@@ -1,6 +1,10 @@
-#include "../catch.hpp"
+#include <iostream>
+#include <chrono>
+#include <map>
 
+#include "../catch.hpp"
 #include "dictionary.h"
+#include "random_string.h"
 
 TEST_CASE( "Empty dictionary" ) {
     Dictionary d;
@@ -12,7 +16,7 @@ TEST_CASE( "One item" ) {
     Dictionary d;
     d.set("friend", "amigo");
     CHECK( d.size() == 1 );
-    CHECK( d.get("friend") == "amigo" );    
+    CHECK( d.get("friend") == "amigo" );
 }
 
 TEST_CASE( "Several items" ) {    
@@ -78,7 +82,7 @@ TEST_CASE( "Same first letter" ) {
 
 TEST_CASE( "User hash function" ) {    
     auto my_hash = [](const std::string &s) { return s.size(); };
-    Dictionary d(10, my_hash);
+    Dictionary d(my_hash, 10);
     d.set("s1", "Short string");
     d.set("s2", "Another short string");
     d.set("long", "Long string");    
@@ -87,4 +91,211 @@ TEST_CASE( "User hash function" ) {
     CHECK( d.size() == 4 );
     CHECK( d.get("s2") == "Another short string" );    
     CHECK( d.get("long long long") == "Very very long string" );
+}
+
+TEST_CASE( "Time check" )
+{
+    std::cout << std::fixed;
+
+    Dictionary                         dictionary {};
+    std::map<std::string, std::string> map        {};
+
+    unsigned long long garbage_collector {0};
+    int  N     = 1000;
+    int  M     = N / 10;
+    auto begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < N; ++i)
+    {
+        dictionary.set(random_string(4), random_string(4));
+    }
+    auto end   = std::chrono::high_resolution_clock::now();
+    std::cout << "N = " << N << " insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "container size: " << dictionary.size() << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < N; ++i)
+    {
+        map.insert(std::make_pair(random_string(4), random_string(4)));
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "N = " << N << " map insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "container size: " << map.size() << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < M; ++i)
+    {
+        garbage_collector += dictionary.get(random_string(4)).size();
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "M = " << M << " find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "last find: " << garbage_collector << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < M; ++i)
+    {
+        garbage_collector += map.find(random_string(4))->second.size();
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "M = " << M << " map find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "garbage size: " << map.size() << std::endl;
+    map.clear();
+
+    N     = 10000;
+    M     = N / 10;
+    dictionary.clear(N / 5);
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < N; ++i)
+    {
+        dictionary.set(random_string(4), random_string(4));
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "N = " << N << " insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "container size: " << dictionary.size() << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < N; ++i)
+    {
+        map.insert(std::make_pair(random_string(4), random_string(4)));
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "N = " << N << " map insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "container size: " << map.size() << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < M; ++i)
+    {
+        garbage_collector += dictionary.get(random_string(4)).size();
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "M = " << M << " find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "last find: " << garbage_collector << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < M; ++i)
+    {
+        garbage_collector += map.find(random_string(4))->second.size();
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "M = " << M << " map find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "garbage size: " << map.size() << std::endl;
+    map.clear();
+
+    N     = 100000;
+    M     = N / 10;
+    dictionary.clear(N / 5);
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < N; ++i)
+    {
+        dictionary.set(random_string(4), random_string(4));
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "N = " << N << " insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "container size: " << dictionary.size() << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < N; ++i)
+    {
+        map.insert(std::make_pair(random_string(4), random_string(4)));
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "N = " << N << " map insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "container size: " << map.size() << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < M; ++i)
+    {
+        garbage_collector += dictionary.get(random_string(4)).size();
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "M = " << M << " find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "last find: " << garbage_collector << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < M; ++i)
+    {
+        garbage_collector += map.find(random_string(4))->second.size();
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "M = " << M << " map find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "garbage size: " << map.size() << std::endl;
+    map.clear();
+
+    N     = 1000000;
+    M     = N / 10;
+    dictionary.clear(N / 5);
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < N; ++i)
+    {
+        dictionary.set(random_string(4), random_string(4));
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "N = " << N << " insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "container size: " << dictionary.size() << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < N; ++i)
+    {
+        map.insert(std::make_pair(random_string(4), random_string(4)));
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "N = " << N << " map insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "container size: " << map.size() << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < M; ++i)
+    {
+        garbage_collector += dictionary.get(random_string(4)).size();
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "M = " << M << " find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "last find: " << garbage_collector << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    for (int i {0}; i < M; ++i)
+    {
+        garbage_collector += map.find(random_string(4))->second.size();
+    }
+    end   = std::chrono::high_resolution_clock::now();
+    std::cout << "M = " << M << " map find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "garbage size: " << map.size() << std::endl;
+    map.clear();
+//
+//    N     = 10000000;
+//    M     = N / 10;
+//    dictionary.clear(N / 5);
+//    begin = std::chrono::high_resolution_clock::now();
+//    for (int i {0}; i < N; ++i)
+//    {
+//        dictionary.set(random_string(4), random_string(4));
+//    }
+//    end   = std::chrono::high_resolution_clock::now();
+//    std::cout << "N = " << N << " insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+//    std::cout << "container size: " << dictionary.size() << std::endl;
+//
+//    begin = std::chrono::high_resolution_clock::now();
+//    for (int i {0}; i < N; ++i)
+//    {
+//        map.insert(std::make_pair(random_string(4), random_string(4)));
+//    }
+//    end   = std::chrono::high_resolution_clock::now();
+//    std::cout << "N = " << N << " map insert time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+//    std::cout << "container size: " << map.size() << std::endl;
+//
+//    begin = std::chrono::high_resolution_clock::now();
+//    for (int i {0}; i < M; ++i)
+//    {
+//        garbage_collector += dictionary.get(random_string(4)).size();
+//    }
+//    end   = std::chrono::high_resolution_clock::now();
+//    std::cout << "M = " << M << " find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+//    std::cout << "last find: " << garbage_collector << std::endl;
+//    begin = std::chrono::high_resolution_clock::now();
+//    for (int i {0}; i < M; ++i)
+//    {
+//        garbage_collector += map.find(random_string(4))->second.size();
+//    }
+//    end   = std::chrono::high_resolution_clock::now();
+//    std::cout << "M = " << M << " map find time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+//    std::cout << "garbage size: " << map.size() << std::endl;
+
 }

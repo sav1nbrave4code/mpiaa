@@ -4,32 +4,41 @@
 #include <functional>
 #include <vector>
 #include <list>
+#include <cmath>
 
-using HashFunction = std::function<int(const std::string&)>;
+using HashFunction = std::function<uint32_t(const std::string&)>;
 
 /**
-* Dictionary that maps strings to other strings.
+* @function    hash_1
+* @function    hash_2
+* @function    hash_3
+* @brief       Three different implementations of hash-functions
 */
+
+auto hash_1(const std::string& string)-> uint32_t;
+auto hash_2(const std::string& string) -> uint32_t;
+auto hash_3(const std::string& string) -> uint32_t;
+
+/**
+ * @class   Dictionary
+ * @brief   Realization of hash-table (unordered map) with simple operations
+ */
+
 class Dictionary {
+
+using KeyValue = std::pair<std::string, std::string>;
+
 public:
-    Dictionary(int num_of_buckets = 1000, HashFunction hash = std::hash<std::string> {});
-    ~Dictionary();
-    
-    /// Set/replace value for the key.
-    void set(const std::string &key, const std::string &value);
-    
-    /// Get value for the key or empty string if there is no such key.    
-    std::string get(const std::string &key) const;
-    
-    /// Get number of items (keys) in the dictionary.
-    int size() const;
+    Dictionary(HashFunction hash = std::hash<std::string> {}, int num_of_buckets = 1000);
+    ~Dictionary() = default;
 
-private:    
-    using KeyValue = std::pair<std::string, std::string>; 
+public:
+    auto set(const std::string &key, const std::string &value) -> void;
+    auto get(const std::string &key) const -> std::string;
+    auto size() const -> int;
+    auto clear(int num_of_buckets = 1000) -> void;
 
-    std::vector<std::list<KeyValue>> table;
-
-    HashFunction hash_function;    
-    
-    // Add other private methods and fields here.
+private:
+    std::vector<std::list<KeyValue>> table          {};
+    HashFunction                     hash_function  {};
 };

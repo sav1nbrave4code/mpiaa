@@ -1,29 +1,94 @@
 #include "dictionary.h"
 
-Dictionary::Dictionary(int num_of_buckets, HashFunction hash) : 
-table(num_of_buckets), hash_function(hash) {    
+#include <iostream>
+
+auto hash_1(const std::string& string) -> uint32_t
+{
+    uint32_t result {0};
+    for (auto item: string)
+    {
+        result += static_cast<uint32_t>(item);
+    }
+    return result;
 }
 
-Dictionary::~Dictionary() {
+auto hash_2(const std::string& string) -> uint32_t
+{
+    uint32_t a      {2};
+    uint32_t result {0};
+    for (uint32_t i {0}; i < string.size(); ++i)
+    {
+        result += static_cast<uint32_t>(string[i]) * static_cast<uint32_t>(pow(a, i));
+    }
+    return result;
 }
 
-void Dictionary::set(const std::string &key, const std::string &value) {
-    // Insert key-value pair into the dictionary.
-    // If such key already exists, replace old value with the new one.
+auto hash_3(const std::string& string) -> uint32_t
+{
+    uint32_t a      {3};
+    uint32_t b      {2};
+    uint32_t c      {7};
+    uint32_t result {c};
+    for (auto item: string)
+    {
+        result = (result << a | result >> b) + static_cast<uint32_t>(item);
+    }
+    return result;
 }
 
-std::string Dictionary::get(const std::string &key) const {
-    // Return value for the key.
-    // Return empty string if there is no such key.
+Dictionary::Dictionary(HashFunction hash, int num_of_buckets) :
+    table(num_of_buckets),
+    hash_function(hash)
+{}
+
+/**
+ * @brief   std::find_if using to check is new element has the same key, subject to collisions
+ */
+
+auto Dictionary::set(const std::string &key, const std::string &value) -> void
+{
+    uint32_t index   {hash_function(key) % static_cast<uint32_t>(table.size())};
+    auto     element = std::find_if(table[index].begin(), table[index].end(),
+                                    [&](const std::pair<std::string, std::string>& item){ return item.first == key; });
+    if (element->first == key)
+    {
+        *element = std::make_pair(key, value);
+    }
+    else
+    {
+        table[index].push_back(std::make_pair(key, value));
+    }
+}
+
+auto Dictionary::get(const std::string &key) const -> std::string
+{
+    if (!size())
+    {
+        return "";
+    }
+    uint32_t index {hash_function(key) % static_cast<uint32_t>(table.size())};
+    for (const auto& item: table[index])
+    {
+        if (item.first == key)
+        {
+            return item.second;
+        }
+    }
     return "";
 }
 
-int Dictionary::size() const {
-    // Return size of the dictionary, i.e. number of key-value pairs.    
-    int size = 0;
-    for (const auto &bucket: table) {
-    	size += bucket.size();    	
+auto Dictionary::size() const -> int
+{
+    int size {0};
+    for (const auto& bucket: table) {
+    	size += static_cast<int>(bucket.size());
     }
     return size;
+}
+
+auto Dictionary::clear(int num_of_buckets) -> void
+{
+    table.clear();
+    table.resize(num_of_buckets);
 }
 
