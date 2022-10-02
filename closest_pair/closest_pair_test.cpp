@@ -1,8 +1,10 @@
-#include "closest_pair.h"
-
-#include "../catch.hpp"
-
 #include <sstream>
+#include <random>
+#include <utility>
+#include <iostream>
+
+#include "closest_pair.h"
+#include "../catch.hpp"
 
 using namespace std;
 
@@ -24,6 +26,15 @@ namespace Catch {
     		return out.str();
         } 
     };
+}
+
+auto random_point(const double min ,const double max) -> Point
+{
+    std::default_random_engine             generator    {};
+    std::uniform_real_distribution<double> distribution {min, max};
+    Point                                  point        {distribution(generator), distribution(generator)};
+
+    return point;
 }
 
 pair<Point, Point> ordered(const pair<Point, Point> &p) {
@@ -77,4 +88,53 @@ TEST_CASE( "Closest points are from stripe" ) {
         Point(-10, 20), Point(-10.5, 10), Point(-11.7, -10), Point(-12.2, -20),
         Point(1, 21), Point(1.5, 11), Point(2, -9), Point(2.7, -19),
         Point(10, 21), Point(10.5, 11), Point(11.7, -9), Point(12.2, -19)})) == make_pair(Point(-1, 20), Point(1, 21)) );
+}
+
+TEST_CASE("Time check")
+{
+    int                N      {1000};
+    std::vector<Point> points {};
+
+    for (int i {0}; i < N; ++i)
+    {
+        points.push_back(random_point(-i, i % N + 5));
+    }
+
+    auto begin  {std::chrono::high_resolution_clock::now()};
+    auto result {closest_pair(points)};
+    auto end    {std::chrono::high_resolution_clock::now()};
+
+    std::cout << std::fixed;
+    std::cout << N << " time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << result.first << ' ' << result.second << std::endl;
+    points.clear();
+
+    N = 10000;
+    for (int i {0}; i < N; ++i)
+    {
+        points.push_back(random_point(-i, i % N + 5));
+    }
+
+    begin  = std::chrono::high_resolution_clock::now();
+    result = closest_pair(points);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << N << " time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << result.first << ' ' << result.second << std::endl;
+    points.clear();
+
+    N = 100000;
+    for (int i {0}; i < N; ++i)
+    {
+        points.push_back(random_point(-i, i %N + 5));
+    }
+
+    begin  = std::chrono::high_resolution_clock::now();
+    result = closest_pair(points);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << N << " time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << result.first << ' ' << result.second << std::endl;
+    points.clear();
+
 }

@@ -1,8 +1,20 @@
-#pragma once
+/**
+ * @file    closest_pair.h
+ * @author  Savin Anton S. <sav1nru<at>mail.ru>
+ * @date    03/10/22
+ */
 
-#include "point.h"
+#pragma once
 
 #include <vector>
 
-// Find the closest pair of points from given points.
-std::pair<Point, Point> closest_pair(const std::vector<Point> &points);
+#include "point.h"
+
+#define NATIVE 0
+
+auto closest_pair(const std::vector<Point> &points) -> std::pair<Point, Point>;
+auto native(const std::vector<Point> &points) -> std::pair<Point, Point>;
+auto divide_and_conquer(const std::vector<Point> &points) -> std::pair<Point, Point>;
+auto closest_pair_between(const std::vector<Point>& left_points,
+                          const std::vector<Point>& right_points,
+                          double distance) -> std::pair<Point, Point>;

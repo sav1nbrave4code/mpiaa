@@ -4,8 +4,8 @@
 
 class Point {
 public:
-	Point() {}
-	Point(double xx, double yy) : x(xx), y(yy) {}
+	Point() = default;
+	Point(double xx, double yy) : x{xx}, y{yy} {}
 
 	double distance(const Point &p) const;
 

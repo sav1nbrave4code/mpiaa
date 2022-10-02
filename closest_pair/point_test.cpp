@@ -1,8 +1,7 @@
-#include "point.h"
-
-#include "../catch.hpp"
-
 #include <cmath>
+
+#include "point.h"
+#include "../catch.hpp"
 
 TEST_CASE( "Point distance" ) {
 	CHECK( Point(2, 2).distance(Point(2, 3)) == 1 );
