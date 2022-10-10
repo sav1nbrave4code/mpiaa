@@ -119,8 +119,8 @@ auto divide_and_conquer(const std::vector<Point> &points) -> std::pair<Point, Po
         left_half.push_back(sorted_points[i]);
     }
 
-    auto right_pair       {native(right_half)};
-    auto left_pair        {native(left_half)};
+    auto right_pair       {divide_and_conquer(right_half)};
+    auto left_pair        {divide_and_conquer(left_half)};
     auto minimal_distance {std::min(right_pair.first.distance(right_pair.second),
                                     left_pair.first.distance(left_pair.second))};
     auto middle_pair      {closest_pair_between(left_half, right_half, minimal_distance)};
