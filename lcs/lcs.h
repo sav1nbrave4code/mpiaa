@@ -11,7 +11,7 @@
 
 /**
  * @define  NATIVE
- * @brief   if defined 1 - lcs uses native, if 0 lcs uses dynamic
+ * @brief   if defined 1 - lcs uses native, if 0 - lcs uses dynamic
  */
 
 #define NATIVE 0
