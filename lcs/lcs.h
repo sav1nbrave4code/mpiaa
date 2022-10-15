@@ -1,5 +1,5 @@
 /**
- * @file    lcs.hpp
+ * @file    lcs.h
  * @author  Anton S. Savin <sav1nru<at>mail.ru>
  * @date    14/10/22
  */
@@ -11,7 +11,7 @@
 
 /**
  * @define  NATIVE
- * @brief   if defined 1 - lcs uses native, if 0 lcs uses dynamic
+ * @brief   if defined 1 - lcs uses native, if 0 - lcs uses dynamic
  */
 
 #define NATIVE 0
