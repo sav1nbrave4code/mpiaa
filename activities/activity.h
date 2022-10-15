@@ -1,16 +1,15 @@
 #pragma once
 
-class Activity {
+class Activity
+{
 public:
     Activity() = default;        
-    Activity(int start, int finish) :
-        start(start), finish(finish) {
-    }        
+    Activity(int start, int finish);
 
-    bool operator<(const Activity &a) const;
-    bool operator==(const Activity &a) const;
+    auto operator<(const Activity &a) const -> bool;
+    auto operator==(const Activity &a) const -> bool;
 
 public:
-    int start {0};
+    int start  {0};
     int finish {0};
 };
