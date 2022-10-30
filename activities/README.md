@@ -36,7 +36,7 @@ https://www.geeksforgeeks.org/find-distinct-subsets-given-set
 
 | Algorithm / Size of activities set (N) | 10         | 100        | 1000       | 10000      |
 |----------------------------------------|------------|------------|------------|------------|
-| native                                 | 0.000001 s | 0.000007 s | 0.000076 s | 0.001244 s |
+| greedy                                 | 0.000001 s | 0.000007 s | 0.000076 s | 0.001244 s |
 
 ### Вывод
 
