@@ -129,6 +129,34 @@ TEST_CASE("Time check")
     std::cout << "size " << result.size() << std::endl;
 
 #else
+
+    N      = 20;
+    data   = random_activities(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = get_max_activities(data);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << N << " " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "size " << result.size() << std::endl;
+
+    N      = 25;
+    data   = random_activities(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = get_max_activities(data);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << N << " " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "size " << result.size() << std::endl;
+
+    N      = 28;
+    data   = random_activities(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = get_max_activities(data);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << N << " " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "size " << result.size() << std::endl;
+
     N      = 100;
     data   = random_activities(N);
     begin  = std::chrono::high_resolution_clock::now();
