@@ -105,6 +105,36 @@ TEST_CASE("Time check")
     std::cout << "result: " << result.size() << std::endl;
 
 #else
+    N      = 20;
+    first  = random_string(N);
+    second = random_string(N / 2);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = lcs(first, second);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << N << " time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "result: " << result.size() << std::endl;
+
+    N      = 22;
+    first  = random_string(N);
+    second = random_string(N / 2);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = lcs(first, second);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << N << " time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "result: " << result.size() << std::endl;
+
+    N      = 25;
+    first  = random_string(N);
+    second = random_string(N / 2);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = lcs(first, second);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << N << " time: " << std::chrono::duration<double>(end - begin).count() << std::endl;
+    std::cout << "result: " << result.size() << std::endl;
+
     N      = 100;
     first  = random_string(N);
     second = random_string(N / 2);
