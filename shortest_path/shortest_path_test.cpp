@@ -2,7 +2,32 @@
 
 #include "shortest_path.h"
 
+#include <chrono>
+#include <random>
+#include <iostream>
+
 using namespace std;
+
+auto random_graph(const int size) -> Graph
+{
+    std::default_random_engine             engine;
+    std::uniform_int_distribution<int>     distribution_vertex {0, size - 1};
+    std::uniform_real_distribution<double> distribution_edge   {1, static_cast<double>(size)};
+
+    Graph result {};
+
+    for (int i {0}; i < size; ++i)
+    {
+        result.add_vertex(i);
+    }
+
+    for (uint64_t i {0}; i < result.get_vertices().size(); ++i)
+    {
+        result.add_edge(distribution_vertex(engine), distribution_vertex(engine), distribution_edge(engine));
+    }
+
+    return result;
+}
 
 TEST_CASE( "[Path] Empty graph", "[path]" ) {
     Graph g {};    
@@ -43,4 +68,39 @@ TEST_CASE( "[Path] Unreachable vertex", "[path]" ) {
     CHECK( shortest_path(g, 3, 0) == vector<int> {} );
 }
 
+TEST_CASE("Time check")
+{
+    std::cout << std::fixed;
 
+    int  N      {10};
+    auto graph  {random_graph(N)};
+    auto begin  {std::chrono::high_resolution_clock::now()};
+    auto result {shortest_path(graph, 0, N)};
+    auto end    {std::chrono::high_resolution_clock::now()};
+    std::cout << "size: " << N << " " << std::chrono::duration<double>(end - begin).count() << " "
+              << result.size() << std::endl;
+
+    N      = 100;
+    graph  = random_graph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = shortest_path(graph, 0, N);
+    end    = std::chrono::high_resolution_clock::now();
+    std::cout << "size: " << N << " " << std::chrono::duration<double>(end - begin).count() << " "
+              << result.size() << std::endl;
+
+    N      = 1000;
+    graph  = random_graph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = shortest_path(graph, 0, N);
+    end    = std::chrono::high_resolution_clock::now();
+    std::cout << "size: " << N << " " << std::chrono::duration<double>(end - begin).count() << " "
+              << result.size() << std::endl;
+
+    N      = 10000;
+    graph  = random_graph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = shortest_path(graph, 0, N);
+    end    = std::chrono::high_resolution_clock::now();
+    std::cout << "size: " << N << " " << std::chrono::duration<double>(end - begin).count() << " "
+              << result.size() << std::endl;
+}

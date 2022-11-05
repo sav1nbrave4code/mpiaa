@@ -4,6 +4,7 @@
 
 #include <set>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -36,6 +37,27 @@ namespace Catch {
             return out.str();
         } 
     };
+}
+
+auto random_graph(const int size) -> Graph
+{
+    std::default_random_engine             engine;
+    std::uniform_int_distribution<int>     distribution_vertex {0, size - 1};
+    std::uniform_real_distribution<double> distribution_edge   {1, static_cast<double>(size)};
+
+    Graph result {};
+
+    for (int i {0}; i < size; ++i)
+    {
+        result.add_vertex(i);
+    }
+
+    for (int i {0}; i < static_cast<int>(result.get_vertices().size()) - 1; ++i)
+    {
+        result.add_edge(i, i + 1, distribution_edge(engine));
+    }
+
+    return result;
 }
 
 TEST_CASE( "[MST] Empty graph", "[mst]") {
@@ -75,5 +97,42 @@ TEST_CASE( "[MST] Many edges", "[mst]" ) {
              {7, 8, 7.0}};    
     CHECK( to_set(min_spanning_tree(g)) == EdgeSet {{0, 1}, {1, 2}, {2, 3}, {3, 4}, 
                                                     {2, 5}, {2, 8}, {5, 6}, {6, 7}} );
+}
+
+TEST_CASE("Time check")
+{
+    std::cout << std::fixed;
+
+    int  N      {10};
+    auto graph  {random_graph(N)};
+    auto begin  {std::chrono::high_resolution_clock::now()};
+    auto result {min_spanning_tree(graph)};
+    auto end    {std::chrono::high_resolution_clock::now()};
+    std::cout << "size: " << N << " " << std::chrono::duration<double>(end - begin).count() << " "
+              << result.size() << std::endl;
+
+    N      = 100;
+    graph  = random_graph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = min_spanning_tree(graph);
+    end    = std::chrono::high_resolution_clock::now();
+    std::cout << "size: " << N << " " << std::chrono::duration<double>(end - begin).count() << " "
+              << result.size() << std::endl;
+
+    N      = 1000;
+    graph  = random_graph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = min_spanning_tree(graph);
+    end    = std::chrono::high_resolution_clock::now();
+    std::cout << "size: " << N << " " << std::chrono::duration<double>(end - begin).count() << " "
+              << result.size() << std::endl;
+
+    N      = 10000;
+    graph  = random_graph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = min_spanning_tree(graph);
+    end    = std::chrono::high_resolution_clock::now();
+    std::cout << "size: " << N << " " << std::chrono::duration<double>(end - begin).count() << " "
+              << result.size() << std::endl;
 }
 
