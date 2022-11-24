@@ -2,7 +2,31 @@
 
 #include "tsp.h"
 
+#include <random>
+
 using namespace std;
+
+auto randomGraph(const int size) -> Graph
+{
+    Graph                                  graph        {};
+    std::default_random_engine             generator    {};
+    std::uniform_real_distribution<double> distribution {1, 100};
+
+    for (int i {0}; i < size; ++i)
+    {
+        graph.add_vertex(i);
+    }
+
+    for (int i {0}; i < size - 1; ++i)
+    {
+        for (int j {i + 1}; j < size; ++j)
+        {
+            graph.add_edge(i, j, distribution(generator));
+        }
+    }
+
+    return graph;
+}
 
 // For a circilar path get its reverse.
 vector<int> reversed(const vector<int> &path) {
@@ -76,6 +100,12 @@ TEST_CASE( "[TSP] No looped path", "[tsp]" ) {
     Graph g {{0, 1, 2.5}, {0, 2, 1.0}, {2, 3, 7.0} };
     CHECK( tsp(g, 0) == vector<int> {} );
     CHECK( tsp(g, 1) == vector<int> {} );
+}
+
+TEST_CASE("[TSP] Time check", "[tsp]")
+{
+//    int   n     {10};
+//    Graph graph {randomGraph()}
 }
 
 
