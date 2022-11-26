@@ -1,8 +1,10 @@
-#include "../catch.hpp"
+#include "../../catch.hpp"
 
 #include "tsp.h"
 
 #include <random>
+#include <chrono>
+#include <iostream>
 
 using namespace std;
 
@@ -26,6 +28,21 @@ auto randomGraph(const int size) -> Graph
     }
 
     return graph;
+}
+
+auto cost(const Graph& graph, const std::vector<int>& path) -> double
+{
+    double cost     {0};
+    auto   vertices {graph.get_vertices()};
+
+    for (uint64_t i {0}; i < path.size() - 1; ++i)
+    {
+        cost += graph.edge_weight(path[i], path[i + 1]);
+    }
+
+    cost += graph.edge_weight(path.back(), path.front());
+
+    return cost;
 }
 
 // For a circilar path get its reverse.
@@ -101,11 +118,3 @@ TEST_CASE( "[TSP] No looped path", "[tsp]" ) {
     CHECK( tsp(g, 0) == vector<int> {} );
     CHECK( tsp(g, 1) == vector<int> {} );
 }
-
-TEST_CASE("[TSP] Time check", "[tsp]")
-{
-//    int   n     {10};
-//    Graph graph {randomGraph()}
-}
-
-

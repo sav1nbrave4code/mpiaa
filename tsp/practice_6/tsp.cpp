@@ -8,10 +8,12 @@ auto tsp(const Graph &graph, int start_vertex) -> std::vector<int>
 {
     try
     {
+#if BNB
+    return tspBnb(graph, start_vertex);
+#endif
+
 #if NATIVE
     return native(graph, start_vertex);
-#else
-    return tspBnb(graph, start_vertex);
 #endif
     }
     catch (...)
@@ -20,7 +22,6 @@ auto tsp(const Graph &graph, int start_vertex) -> std::vector<int>
     }
 }
 
-#if not NATIVE
 auto minPath(const Graph& graph, const std::vector<int>& first, const std::vector<int>& second) -> std::vector<int>
 {
     double first_length  {0};
@@ -155,8 +156,6 @@ auto tspBnb(const Graph& graph, int start_vertex) -> std::vector<int>
     return bnb(graph, visited, best_path);
 }
 
-#else
-
 auto native(const Graph& graph, int start_vertex) -> std::vector<int>
 {
 
@@ -216,6 +215,8 @@ auto native(const Graph& graph, int start_vertex) -> std::vector<int>
     return result;
 }
 
+#if GREEDY
+
 auto greedy(const Graph& graph, int start_vertex) -> std::vector<int>
 {
     if (graph.get_vertices().size() < 2)
@@ -231,15 +232,29 @@ auto greedy(const Graph& graph, int start_vertex) -> std::vector<int>
     {
         auto adjacent_vertices {graph.get_adjacent_vertices(current_vertex)};
 
-        std::remove_if(adjacent_vertices.begin(), adjacent_vertices.end(), [=](int item){
-            return std::find(path.begin(), path.end(), item) != std::end(path);
-        });
+        for (const auto& vertex : adjacent_vertices)
+        {
+            auto item {std::find(path.begin(), path.end(), vertex)};
 
-        auto next {std::min(adjacent_vertices.begin(), adjacent_vertices.end())};
+            if (item != std::end(path))
+            {
+                adjacent_vertices.erase(std::find(adjacent_vertices.begin(), adjacent_vertices.end(), vertex));
+            }
+        }
 
-        path.push_back(*next);
+        std::vector<double> adjacent_costs {};
 
-        current_vertex = *next;
+        for (const auto& adjacent_vertex : adjacent_vertices)
+        {
+            adjacent_costs.push_back(graph.edge_weight(adjacent_vertex, current_vertex));
+        }
+
+        auto next        {std::min(adjacent_costs.begin(), adjacent_costs.end())};
+        auto next_vertex {adjacent_vertices[next - adjacent_costs.begin()]};
+
+        path.push_back(next_vertex);
+
+        current_vertex = next_vertex;
     }
 
     return path;
