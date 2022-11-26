@@ -260,4 +260,96 @@ auto greedy(const Graph& graph, int start_vertex) -> std::vector<int>
     return path;
 }
 
-#endif
+#endif  // GREEDY
+
+#if LOCAL
+
+auto transform(const std::vector<int>& path, const int first, const int second) -> std::vector<int>
+{
+    std::vector<int> result {path};
+    auto             iter1  {std::find(result.begin(), result.end(), first)};
+    auto             iter2  {std::find(result.begin(), result.end(), second)};
+
+    std::iter_swap(iter1, iter2);
+
+    return result;
+}
+
+auto checkNonAdjacentPair(const vertex_pair& first_pair, const vertex_pair& second_pair) -> bool
+{
+    return first_pair.first  != second_pair.first
+           && first_pair.first  != second_pair.second
+           && first_pair.second != second_pair.first
+           && first_pair.second != second_pair.second;
+}
+
+auto twoOpt(const Graph& graph, const std::vector<int>& path) -> std::vector<int>
+{
+    std::vector<vertex_pair> non_adjacent_pairs {};
+    std::vector<double_pair> result             {};
+    auto                     current_path       {path};
+
+    for (uint64_t i {0}; i < current_path.size() - 1; ++i)
+    {
+        for (uint64_t j {i + 1}; j < current_path.size(); ++j)
+        {
+            non_adjacent_pairs.emplace_back(current_path[i], current_path[j]);
+        }
+    }
+
+    for (uint64_t i {0}; i < non_adjacent_pairs.size() - 1; ++i)
+    {
+        for (uint64_t j {0}; j < non_adjacent_pairs.size(); ++j)
+        {
+            if (checkNonAdjacentPair(non_adjacent_pairs[i], non_adjacent_pairs[j]))
+            {
+                result.emplace_back(non_adjacent_pairs[i], non_adjacent_pairs[j]);
+            }
+        }
+    }
+
+    for (const auto& current : result)
+    {
+        double old_weight {graph.edge_weight(current.first.first,  current.first.second) +
+                           graph.edge_weight(current.second.first, current.second.second)};
+        double new_weight {graph.edge_weight(current.first.first,  current.second.first) +
+                           graph.edge_weight(current.first.second, current.second.second)};
+
+        if (new_weight < old_weight)
+        {
+            return transform(current_path,  current.first.second, current.second.first);
+        }
+    }
+
+    return current_path;
+}
+
+auto tspLocalSearch(const Graph& graph) -> std::vector<int>
+{
+    if (graph.get_vertices().size() < 2)
+    {
+        return {};
+    }
+
+    std::vector<int> current_path {graph.get_vertices()};
+
+    try
+    {
+
+        while (true) {
+            std::vector<int> improved_path{twoOpt(graph, current_path)};
+
+            if (length(graph, improved_path) < length(graph, current_path)) {
+                current_path = improved_path;
+            } else {
+                return current_path;
+            }
+        }
+    }
+    catch (...)
+    {
+        return {};
+    }
+}
+
+#endif  // LOCAL

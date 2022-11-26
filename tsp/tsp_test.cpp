@@ -1,4 +1,4 @@
-#include "../../catch.hpp"
+#include "../catch.hpp"
 
 #include "tsp.h"
 
@@ -117,4 +117,48 @@ TEST_CASE( "[TSP] No looped path", "[tsp]" ) {
     Graph g {{0, 1, 2.5}, {0, 2, 1.0}, {2, 3, 7.0} };
     CHECK( tsp(g, 0) == vector<int> {} );
     CHECK( tsp(g, 1) == vector<int> {} );
+}
+
+TEST_CASE("[TSP] Time check", "[tsp]")
+{
+
+    std::cout << std::fixed;
+
+
+    int  N      {7};
+    auto graph  {randomGraph(N)};
+    auto begin  {std::chrono::high_resolution_clock::now()};
+    auto result {tspLocalSearch(graph)};
+    auto end    {std::chrono::high_resolution_clock::now()};
+
+    std::cout << "size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 8;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = tspLocalSearch(graph);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 9;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = tspLocalSearch(graph);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 10;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = tspLocalSearch(graph);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
 }
