@@ -30,6 +30,14 @@ auto randomGraph(const int size) -> Graph
     return graph;
 }
 
+auto random_vertex(const int max) -> int
+{
+    std::default_random_engine generator {};
+    std::uniform_int_distribution<int> distribution{0, max};
+
+    return distribution(generator);
+}
+
 auto cost(const Graph& graph, const std::vector<int>& path) -> double
 {
     double cost     {0};
@@ -45,7 +53,7 @@ auto cost(const Graph& graph, const std::vector<int>& path) -> double
     return cost;
 }
 
-// For a circilar path get its reverse.
+// For a circular path get its reverse.
 vector<int> reversed(const vector<int> &path) {
     if (path.empty()) {
         return vector<int> {};
@@ -56,7 +64,7 @@ vector<int> reversed(const vector<int> &path) {
     return result;
 }
 
-// From two possible directions for a circlular path choose one with min second vertex.
+// From two possible directions for a circular path choose one with min second vertex.
 vector<int> min_dir(const vector<int> &path) {
     if (path.size() <= 1) {
         return path;
@@ -121,17 +129,15 @@ TEST_CASE( "[TSP] No looped path", "[tsp]" ) {
 
 TEST_CASE("[TSP] Time check", "[tsp]")
 {
-
     std::cout << std::fixed;
 
-
-    int  N      {7};
-    auto graph  {randomGraph(N)};
+    int  N                   {7};
+    auto graph        {randomGraph(N)};
     auto begin  {std::chrono::high_resolution_clock::now()};
-    auto result {tspLocalSearch(graph)};
+    auto result   {tspLocalSearch(graph)};
     auto end    {std::chrono::high_resolution_clock::now()};
 
-    std::cout << "size: " << N << " cost: " << cost(graph ,result) << " time: "
+    std::cout << "[localSearch] size: " << N << " cost: " << cost(graph ,result) << " time: "
               << std::chrono::duration<double>(end - begin).count() << std::endl;
 
     N      = 8;
@@ -140,7 +146,7 @@ TEST_CASE("[TSP] Time check", "[tsp]")
     result = tspLocalSearch(graph);
     end    = std::chrono::high_resolution_clock::now();
 
-    std::cout << "size: " << N << " cost: " << cost(graph ,result) << " time: "
+    std::cout << "[localSearch] size: " << N << " cost: " << cost(graph ,result) << " time: "
               << std::chrono::duration<double>(end - begin).count() << std::endl;
 
     N      = 9;
@@ -149,7 +155,7 @@ TEST_CASE("[TSP] Time check", "[tsp]")
     result = tspLocalSearch(graph);
     end    = std::chrono::high_resolution_clock::now();
 
-    std::cout << "size: " << N << " cost: " << cost(graph ,result) << " time: "
+    std::cout << "[localSearch] size: " << N << " cost: " << cost(graph ,result) << " time: "
               << std::chrono::duration<double>(end - begin).count() << std::endl;
 
     N      = 10;
@@ -158,7 +164,88 @@ TEST_CASE("[TSP] Time check", "[tsp]")
     result = tspLocalSearch(graph);
     end    = std::chrono::high_resolution_clock::now();
 
-    std::cout << "size: " << N << " cost: " << cost(graph ,result) << " time: "
+    std::cout << "[localSearch] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 100;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = tspLocalSearch(graph);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[localSearch] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 200;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = tspLocalSearch(graph);
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[localSearch] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 7;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = greedy(graph, random_vertex(N));
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[greedy] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 8;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = greedy(graph, random_vertex(N));
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[greedy] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 9;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = greedy(graph, random_vertex(N));
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[greedy] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 10;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = greedy(graph, random_vertex(N));
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[greedy] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 100;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = greedy(graph, random_vertex(N));
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[greedy] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 200;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = greedy(graph, random_vertex(N));
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[greedy] size: " << N << " cost: " << cost(graph ,result) << " time: "
+              << std::chrono::duration<double>(end - begin).count() << std::endl;
+
+    N      = 1000;
+    graph  = randomGraph(N);
+    begin  = std::chrono::high_resolution_clock::now();
+    result = greedy(graph, random_vertex(N));
+    end    = std::chrono::high_resolution_clock::now();
+
+    std::cout << "[greedy] size: " << N << " cost: " << cost(graph ,result) << " time: "
               << std::chrono::duration<double>(end - begin).count() << std::endl;
 
 }
