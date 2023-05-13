@@ -231,35 +231,32 @@ auto greedy(const Graph& graph, int start_vertex) -> std::vector<int>
     while (path.size() < vertices.size())
     {
         auto adjacent_vertices {graph.get_adjacent_vertices(current_vertex)};
+        auto min_edge {std::numeric_limits<double>::infinity()};
+        auto next_vertex {std::numeric_limits<int>::max()};
 
         for (const auto& vertex : adjacent_vertices)
         {
-            auto item {std::find(path.begin(), path.end(), vertex)};
-
-            if (item != std::end(path))
+            if (std::find(path.begin(), path.end(), vertex) == std::end(path))
             {
-                adjacent_vertices.erase(std::find(adjacent_vertices.begin(), adjacent_vertices.end(), vertex));
+                auto copy_edge_wight {graph.edge_weight(vertex, current_vertex)};
+                if (copy_edge_wight < min_edge)
+                {
+                    min_edge    = copy_edge_wight;
+                    next_vertex = vertex;
+                }
             }
         }
-
-        std::vector<double> adjacent_costs {};
-
-        for (const auto& adjacent_vertex : adjacent_vertices)
+        if (next_vertex == std::numeric_limits<int>::max())
         {
-            adjacent_costs.push_back(graph.edge_weight(adjacent_vertex, current_vertex));
+            return std::vector<int> {};
         }
 
-        auto next        {std::min(adjacent_costs.begin(), adjacent_costs.end())};
-        auto next_vertex {adjacent_vertices[next - adjacent_costs.begin()]};
-
         path.push_back(next_vertex);
-
         current_vertex = next_vertex;
     }
 
-    return path;
+    return graph.has_edge(current_vertex, start_vertex) ? path : std::vector<int> {};
 }
-
 #endif  // GREEDY
 
 #if LOCAL
@@ -285,39 +282,26 @@ auto checkNonAdjacentPair(const vertex_pair& first_pair, const vertex_pair& seco
 
 auto twoOpt(const Graph& graph, const std::vector<int>& path) -> std::vector<int>
 {
-    std::vector<vertex_pair> non_adjacent_pairs {};
-    std::vector<double_pair> result             {};
-    auto                     current_path       {path};
+    std::vector<std::pair<int, int>> result {};
+    auto current_path {path};
 
-    for (uint64_t i {0}; i < current_path.size() - 1; ++i)
+    for (unsigned i {0}; i < current_path.size() - 1; i += 2)
     {
-        for (uint64_t j {i + 1}; j < current_path.size(); ++j)
-        {
-            non_adjacent_pairs.emplace_back(current_path[i], current_path[j]);
-        }
+        result.emplace_back(current_path[i], current_path[i + 1]);
     }
 
-    for (uint64_t i {0}; i < non_adjacent_pairs.size() - 1; ++i)
+    for (unsigned i {0}; i < result.size() - 1; ++i)
     {
-        for (uint64_t j {0}; j < non_adjacent_pairs.size(); ++j)
+        for (unsigned j {i + 1};j < result.size(); ++j)
         {
-            if (checkNonAdjacentPair(non_adjacent_pairs[i], non_adjacent_pairs[j]))
+            auto old_weight {graph.edge_weight(result[i].first, result[i].second) +
+                             graph.edge_weight(result[j].first, result[j].second)};
+            auto new_weight {graph.edge_weight(result[i].first, result[j].first) +
+                             graph.edge_weight(result[i].second, result[j].second)};
+            if (new_weight < old_weight)
             {
-                result.emplace_back(non_adjacent_pairs[i], non_adjacent_pairs[j]);
+                current_path = transform(current_path, result[i].second, result[j].first);
             }
-        }
-    }
-
-    for (const auto& current : result)
-    {
-        double old_weight {graph.edge_weight(current.first.first,  current.first.second) +
-                           graph.edge_weight(current.second.first, current.second.second)};
-        double new_weight {graph.edge_weight(current.first.first,  current.second.first) +
-                           graph.edge_weight(current.first.second, current.second.second)};
-
-        if (new_weight < old_weight)
-        {
-            return transform(current_path,  current.first.second, current.second.first);
         }
     }
 
